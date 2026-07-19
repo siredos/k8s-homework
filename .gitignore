@@ -1,0 +1,22 @@
+# Секреты и пароли 
+*secret*.yaml
+secret.yaml
+*-secret.yaml
+kubeconfig
+*.conf
+
+# Временные файлы
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Docker образы 
+*.tar
+*.tar.gz
+
+# Скомпилированные файлы
+*.pyc
+__pycache__/
