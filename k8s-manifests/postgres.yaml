@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: homework
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  clusterIP: None  # Headless Service для StatefulSet
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: homework
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      # SecurityContext на уровне Pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999  
+        fsGroup: 999
+      containers:
+      - name: postgres
+        image: postgres:15
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: postgres
+        
+        # Переменные окружения из Secret и ConfigMap
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_NAME
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: DB_PASSWORD
+        
+        # Probes для PostgreSQL
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - homework
+            - -d
+            - homework
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - homework
+            - -d
+            - homework
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Ресурсы (requests и limits)
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # SecurityContext на уровне контейнера
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        
+        # Монтирование PVC
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  
+  # Шаблон PVC для StatefulSet
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: nfs-storage  
+      resources:
+        requests:
+          storage: 5Gi  
