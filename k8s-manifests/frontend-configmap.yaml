@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-html
+  namespace: homework
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>K8s Homework Frontend</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+            #result { margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 8px; }
+        </style>
+    </head>
+    <body>
+        <h1>Kubernetes Homework: Frontend</h1>
+        <p>Testing connection to backend...</p>
+        <div id="result">Loading...</div>
+        <script>
+            fetch('/api/visits')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerHTML = 
+                        '<b>Version:</b> ' + data.version + '<br>' +
+                        '<b>Pod:</b> ' + data.pod + '<br>' +
+                        '<b>Total Visits:</b> ' + data.total;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = '<b>Error:</b> ' + error;
+                });
+        </script>
+    </body>
+    </html>
