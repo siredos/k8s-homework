@@ -8,7 +8,7 @@
 ## Версии компонентов
 - Kubeadm:
  Kubernetes v1.31.0
-- Kubelet
+- Kubelet:
  Kubernetes v1.31.0
 - Kubectl:
  Client Version: v1.31.0
