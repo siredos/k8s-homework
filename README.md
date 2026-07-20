@@ -14,7 +14,7 @@
  Client Version: v1.31.0
  Kustomize Version: v5.4.2
 - Containerd:
- v2 2.2.2 
+ v 2.2.2 
 - Calico:
  v3.29.0
 
