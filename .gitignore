@@ -1,5 +1,5 @@
 # Секреты и пароли 
-*secret*.yaml
+k8s-manifests/secret.yaml
 secret.yaml
 *-secret.yaml
 kubeconfig
