@@ -38,6 +38,26 @@ spec:
     - protocol: TCP
       port: 5432
 
+  # Разрешаю PostgreSQL подам общаются друг с другом (Репликация и Failsafe)
+  - from:
+    - podSelector:
+        matchLabels:
+          cnpg.io/cluster: postgres-ha
+    ports:
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 8000
+
+ #Разрешаю оператору CloudNativePG (из ns cnpg-system) управлять кластером
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: cnpg-system
+    ports:
+    - protocol: TCP
+      port: 8000
+
   egress:
   # Разрешаю всем подам ходить в DNS (CoreDNS)
   - to:
@@ -58,3 +78,34 @@ spec:
     ports:
     - protocol: TCP
       port: 5432
+
+  # Разрешаю подам обращаться к Kubernetes API 
+  - to:
+    - ipBlock:
+        cidr: 10.96.0.0/16
+    ports:
+    - protocol: TCP
+      port: 443
+
+  # Доступ к API 2: Разрешаю трафик на реальный IP мастер-ноды, в связи с очень веселым поведением kube-proxy (Он перенаправляет к 10.96.0.1. туда....)
+  - to:
+    - ipBlock:
+        cidr: 192.168.163.134/32
+    ports:
+    - protocol: TCP
+      port: 6443
+    - protocol: TCP
+      port: 443
+ 
+
+  # Разрешаю PostgreSQL подам общаются друг с другом (egress)
+  - to:
+    - podSelector:
+        matchLabels:
+          cnpg.io/cluster: postgres-ha
+    ports:
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 8000
+
