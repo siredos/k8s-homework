@@ -1,0 +1,33 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-ha
+  namespace: homework
+spec:
+  instances: 3
+  
+  storage:
+    storageClass: nfs-storage
+    size: 5Gi
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  imageName: ghcr.io/cloudnative-pg/postgresql:15.6
+  
+  bootstrap:
+    initdb:
+      database: homework
+      owner: homework
+      secret:
+        name: postgres-app-secret 
+  
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: "128MB"

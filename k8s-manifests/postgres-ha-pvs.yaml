@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-ha-pv-1
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: 192.168.163.134
+    path: /srv/nfs/postgres-ha-1
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-ha-pv-2
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: 192.168.163.134
+    path: /srv/nfs/postgres-ha-2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-ha-pv-3
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: 192.168.163.134
+    path: /srv/nfs/postgres-ha-3
